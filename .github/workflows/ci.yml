@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+      - name: Syntax check
+        run: |
+          node --check background.js
+          node --check lib/match.js
+      - name: Unit tests
+        run: node --test
+      - name: Validate manifest
+        run: |
+          python3 - <<'EOF'
+          import json, pathlib
+          m = json.loads(pathlib.Path("manifest.json").read_text(encoding="utf-8"))
+          assert m["manifest_version"] == 3, m["manifest_version"]
+          assert m["background"]["service_worker"] == "background.js"
+          assert m["background"]["type"] == "module"
+          assert m["permissions"] == ["bookmarks"], m["permissions"]
+          for size in ("16", "48", "128"):
+              path = pathlib.Path(m["icons"][size])
+              assert path.is_file(), path
+          print("manifest ok", m["version"])
+          EOF

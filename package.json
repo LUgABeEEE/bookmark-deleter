@@ -1,0 +1,11 @@
+{
+  "name": "bookmark-deleter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Chrome/Edge MV3 extension that deletes dead-link bookmarks only after two deliberate clicks.",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test"
+  }
+}
